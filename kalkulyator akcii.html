@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор акции — скидка + рассрочка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#242424;
+    --panel:#333333;
+    --panel-2:#3A331C;
+    --line:#4C4C4C;
+    --line-soft:#3D3D3D;
+    --fg:#FFFFFF;
+    --muted:#A3A3A3;
+    --muted-2:#C7C7C7;
+    --yellow:#FFDD2C;
+    --coral:#F2735A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Onest',sans-serif;
+    padding:48px 18px 70px;
+    font-feature-settings:'tnum' 1;
+  }
+  .wrap{max-width:1000px;margin:0 auto;}
+
+  .brandbar{
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:26px;
+  }
+  .brand-badge{
+    background:#FFFFFF;border-radius:10px;
+    padding:10px 18px;
+    display:inline-flex;align-items:center;
+  }
+  .brand-badge img{height:22px;width:auto;display:block;}
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;
+    color:var(--muted-2);text-transform:uppercase;
+  }
+  h1{
+    font-weight:800;font-size:clamp(28px,4.5vw,40px);
+    line-height:1.08;margin:0 0 10px;text-align:center;letter-spacing:-.01em;
+  }
+  .subtitle{text-align:center;color:var(--muted);font-size:14.5px;margin:0 0 40px;font-weight:400;}
+
+  .grid{display:grid;grid-template-columns:1fr 1.05fr;gap:20px;align-items:start;}
+  @media (max-width:860px){.grid{grid-template-columns:1fr;}}
+
+  .panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:26px 24px;}
+  .panel h2{
+    font-size:11.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--yellow);margin:0 0 20px;
+  }
+  .panel h2.spaced{margin-top:26px;padding-top:22px;border-top:1px solid var(--line-soft);}
+
+  .field{margin-bottom:17px;}
+  .field:last-child{margin-bottom:0;}
+  .field-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:10px;}
+  .field-label{font-size:13.5px;color:var(--muted-2);font-weight:500;}
+  .field-value{
+    font-weight:700;font-size:14px;color:var(--fg);
+    white-space:nowrap;font-feature-settings:'tnum' 1;
+  }
+  .field-hint{font-size:11.5px;color:var(--muted);margin:7px 2px 0;line-height:1.5;font-weight:400;}
+
+  .toggle{display:flex;gap:8px;flex-wrap:wrap;}
+  .toggle-btn{
+    flex:1;min-width:140px;
+    background:var(--bg);border:1px solid var(--line);border-radius:8px;
+    color:var(--muted-2);font-family:'Onest',sans-serif;font-weight:600;font-size:12.5px;
+    padding:10px 12px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;
+    line-height:1.3;
+  }
+  .toggle-btn:hover{border-color:#6a6a6a;}
+  .toggle-btn.active{
+    background:var(--yellow);border-color:var(--yellow);color:#1a1a1a;
+  }
+
+  input[type=range]{
+    -webkit-appearance:none;width:100%;height:6px;border-radius:3px;
+    outline:none;background:var(--line);
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--yellow);cursor:pointer;border:3px solid var(--panel);
+    box-shadow:0 0 0 1px var(--yellow);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:18px;height:18px;border-radius:50%;background:var(--yellow);
+    cursor:pointer;border:3px solid var(--panel);
+  }
+  input[type=range]::-moz-range-track{background:transparent;}
+  input[type=range]:focus-visible{outline:2px solid var(--yellow);outline-offset:4px;}
+  input[type=number]{
+    width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+    color:var(--fg);font-family:'Onest',sans-serif;font-weight:700;font-size:16px;padding:10px 12px;
+    outline:none;font-feature-settings:'tnum' 1;
+  }
+  input[type=number]:focus{border-color:var(--yellow);}
+
+  .field.margin-field{
+    background:var(--panel-2);border:1px solid #55491f;border-radius:10px;
+    padding:14px 14px 16px;margin-top:22px;
+  }
+  .field.margin-field .field-label{color:var(--yellow);font-weight:600;}
+
+  /* Results */
+  .results{position:sticky;top:24px;}
+
+  .hero{
+    background:var(--panel-2);
+    border:1px solid #55491f;
+    border-radius:12px;
+    padding:24px 22px 22px;
+    margin-bottom:18px;
+  }
+  .hero .block-title{font-size:16px;font-weight:700;margin:0 0 3px;color:var(--fg);}
+  .hero .block-sub{font-size:12px;color:var(--muted);margin:0 0 18px;font-weight:400;}
+  .hero .compare-val{font-size:clamp(28px,4.6vw,36px);font-weight:800;}
+  .hero .compare-val.after{color:var(--yellow);}
+  .hero .compare-val.after.neg{color:var(--coral);}
+
+  .compare{
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px;
+    padding:2px 2px 18px;margin-bottom:6px;border-bottom:1px solid var(--line-soft);
+  }
+  .compare-side{display:flex;flex-direction:column;gap:6px;}
+  .compare-side.after{text-align:right;align-items:flex-end;}
+  .compare-tag{
+    font-size:10.5px;letter-spacing:.08em;font-weight:600;
+    color:var(--muted);text-transform:uppercase;
+  }
+  .compare-val{line-height:1;font-feature-settings:'tnum' 1;white-space:nowrap;}
+  .compare-arrow{color:var(--muted);font-size:18px;padding-bottom:8px;font-weight:600;}
+  .delta{
+    text-align:center;font-size:13px;font-weight:700;
+    margin:10px 0 0;padding-bottom:2px;font-feature-settings:'tnum' 1;
+  }
+  .delta.pos{color:var(--yellow);}
+  .delta.neg{color:var(--coral);}
+
+  .support{
+    display:grid;grid-template-columns:1fr 1fr;gap:14px;
+  }
+  @media (max-width:520px){.support{grid-template-columns:1fr;}}
+  .support-card{
+    background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:18px 18px 16px;
+  }
+  .support-card .block-title{font-size:14px;font-weight:700;margin:0 0 2px;}
+  .support-card .block-sub{font-size:11px;color:var(--muted);margin:0 0 14px;font-weight:400;}
+  .support-card .compare-val{font-size:18px;font-weight:700;}
+
+  .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:34px;line-height:1.6;font-weight:400;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brandbar"><span class="brand-badge"><img src="data:image/png;base64,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" alt="Долями × Т-Банк"></span></div>
+  <h1>Калькулятор акции</h1>
+  <p class="subtitle">Скидка партнёра + скидка сервиса на комиссию — доп. доход магазина, до и после</p>
+
+  <div class="grid">
+
+    <!-- LEVERS -->
+    <div class="panel">
+      <h2>Исходные данные</h2>
+
+      <div class="field">
+        <div class="field-top"><span class="field-label">Товарооборот (ТО) в месяц</span></div>
+        <input type="number" id="to" value="1000000" step="10000" min="0">
+      </div>
+      <div class="field">
+        <div class="field-top"><span class="field-label">Текущая доля сервиса в ТО</span><span class="field-value" id="v-share0">10%</span></div>
+        <input type="range" id="share0" min="0" max="100" step="1" value="10">
+      </div>
+      <div class="field">
+        <div class="field-top"><span class="field-label">Текущая комиссия сервиса</span><span class="field-value" id="v-loss0">6%</span></div>
+        <input type="range" id="loss0" min="0" max="20" step="0.5" value="6">
+      </div>
+      <div class="field">
+        <div class="field-top"><span class="field-label">Рост среднего чека к обычному</span><span class="field-value" id="v-uplift">35%</span></div>
+        <input type="range" id="uplift" min="0" max="100" step="1" value="35">
+      </div>
+
+      <div class="field margin-field">
+        <div class="field-top"><span class="field-label">Маржа с товара (валовая), %</span><span class="field-value" id="v-margin">30%</span></div>
+        <input type="range" id="margin" min="0" max="70" step="1" value="30">
+        <p class="field-hint">Средняя торговая наценка магазина — доля выручки, которая остаётся у магазина после себестоимости товара. Нужна, чтобы посчитать не рост оборота, а реальный доп. доход.</p>
+      </div>
+
+      <h2 class="spaced">Параметры акции</h2>
+
+      <div class="field">
+        <div class="field-top"><span class="field-label">Кому даём скидку</span></div>
+        <div class="toggle" id="mode-toggle">
+          <button type="button" class="toggle-btn active" data-mode="service">Только при оформлении в рассрочку</button>
+          <button type="button" class="toggle-btn" data-mode="all">Всем клиентам</button>
+        </div>
+        <p class="field-hint" id="mode-hint">Скидку получает только тот, кто оформил покупку через сервис рассрочки — это и стимулирует переток в сервис.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-top"><span class="field-label">Доля товаров на акции</span><span class="field-value" id="v-goods">50%</span></div>
+        <input type="range" id="goods" min="1" max="100" step="1" value="50">
+      </div>
+      <div class="field">
+        <div class="field-top"><span class="field-label">Скидка клиенту</span><span class="field-value" id="v-disc">4%</span></div>
+        <input type="range" id="disc" min="0" max="100" step="0.5" value="4">
+      </div>
+      <div class="field">
+        <div class="field-top"><span class="field-label">Новая комиссия сервиса на акции</span><span class="field-value" id="v-comm1">2%</span></div>
+        <input type="range" id="comm1" min="0" max="20" step="0.5" value="2">
+      </div>
+      <div class="field">
+        <div class="field-top"><span class="field-label">Целевая доля сервиса после акции</span><span class="field-value" id="v-target">25%</span></div>
+        <input type="range" id="target" min="1" max="100" step="1" value="25">
+      </div>
+      <div class="field">
+        <div class="field-top"><span class="field-label">Прирост ТО, если акция на 100% ассортимента</span><span class="field-value" id="v-extra">20%</span></div>
+        <input type="range" id="extra" min="0" max="100" step="1" value="20">
+        <p class="field-hint">Известный эффект акции на весь магазин (трафик, узнаваемость), если бы скидка охватывала весь ассортимент. Пересчитывается пропорционально доле акционных товаров — при текущей доле (<span id="extra-goods-pct">50%</span>) эффект составит <b id="extra-effective" style="color:var(--yellow);">10.0%</b>.</p>
+      </div>
+      <div class="field">
+        <div class="field-top"><span class="field-label">Экспертная надбавка роста всего ТО</span><span class="field-value" id="v-expert">5%</span></div>
+        <input type="range" id="expert" min="0" max="50" step="1" value="5">
+        <p class="field-hint">Отдельная экспертная оценка менеджера/магазина: доп. рост оборота сверх обычного эффекта акций (рекламная поддержка, сезонность и т.п.). Если оснований нет — оставьте 0%.</p>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results">
+
+      <div class="hero">
+        <p class="block-title">Доп. доход магазина</p>
+        <p class="block-sub">Маржа с оборота минус потеря от рассрочки, до и после акции</p>
+        <div class="compare">
+          <div class="compare-side"><span class="compare-tag">До</span><span class="compare-val" id="profit-before">294 000 ₽</span></div>
+          <div class="compare-arrow">→</div>
+          <div class="compare-side after"><span class="compare-tag">После</span><span class="compare-val" id="profit-after">341 217 ₽</span></div>
+        </div>
+        <div class="delta pos" id="profit-delta">+47 217 ₽ / мес</div>
+      </div>
+
+      <div class="support">
+        <div class="support-card">
+          <p class="block-title">Товарооборот</p>
+          <p class="block-sub">ТО, до / после</p>
+          <div class="compare" style="border:none;padding-bottom:0;margin-bottom:8px;">
+            <div class="compare-side"><span class="compare-tag">До</span><span class="compare-val" id="to-before">1 000 000 ₽</span></div>
+            <div class="compare-arrow">→</div>
+            <div class="compare-side after"><span class="compare-tag">После</span><span class="compare-val" id="to-after" style="color:var(--yellow);">1 179 015 ₽</span></div>
+          </div>
+          <div class="delta pos" id="to-delta" style="text-align:left;margin-top:2px;">+17.9%</div>
+        </div>
+
+        <div class="support-card">
+          <p class="block-title">Потеря от рассрочки</p>
+          <p class="block-sub">% от всего ТО, до / после</p>
+          <div class="compare" style="border:none;padding-bottom:0;margin-bottom:8px;">
+            <div class="compare-side"><span class="compare-tag">До</span><span class="compare-val" id="loss-before">0.60%</span></div>
+            <div class="compare-arrow">→</div>
+            <div class="compare-side after"><span class="compare-tag">После</span><span class="compare-val" id="loss-after" style="color:var(--yellow);">1.06%</span></div>
+          </div>
+          <div class="delta neg" id="loss-delta" style="text-align:left;margin-top:2px;">+0.46 п.п.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <p class="foot">Доп. доход = (ТО × маржа) − потеря от рассрочки, посчитано отдельно «до» и «после» акции.<br>
+  Все промежуточные расчёты (переток в сервис, ставка, доход партнёра) скрыты — здесь только итог для магазина.</p>
+</div>
+
+<script>
+function fmtRub(n){
+  return Math.round(n).toLocaleString('ru-RU') + ' ₽';
+}
+function fmtPct(n, digits){
+  return n.toFixed(digits) + '%';
+}
+function paintRange(el){
+  const min = parseFloat(el.min), max = parseFloat(el.max), val = parseFloat(el.value);
+  const pct = ((val-min)/(max-min))*100;
+  el.style.background = `linear-gradient(to right, var(--yellow) 0%, var(--yellow) ${pct}%, var(--line) ${pct}%, var(--line) 100%)`;
+}
+
+let discountMode = 'service'; // 'service' | 'all'
+
+const modeHints = {
+  service: 'Скидку получает только тот, кто оформил покупку через сервис рассрочки — это и стимулирует переток в сервис.',
+  all: 'Скидку получают все покупатели акционных товаров, независимо от способа оплаты. Дороже для магазина, но охватывает всю базу покупателей.'
+};
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    discountMode = btn.dataset.mode;
+    document.getElementById('mode-hint').textContent = modeHints[discountMode];
+    calc();
+  });
+});
+
+function calc(){
+  const TO = parseFloat(document.getElementById('to').value) || 0;
+  const share0 = parseFloat(document.getElementById('share0').value)/100;
+  const loss0 = parseFloat(document.getElementById('loss0').value)/100;
+  const uplift = parseFloat(document.getElementById('uplift').value)/100;
+  const margin = parseFloat(document.getElementById('margin').value)/100;
+  const goods = parseFloat(document.getElementById('goods').value)/100;
+  const disc = parseFloat(document.getElementById('disc').value)/100;
+  const comm1 = parseFloat(document.getElementById('comm1').value)/100;
+  const target = parseFloat(document.getElementById('target').value)/100;
+  const extraFull = parseFloat(document.getElementById('extra').value)/100;
+  const expert = parseFloat(document.getElementById('expert').value)/100;
+
+  document.getElementById('v-share0').textContent = (share0*100).toFixed(0)+'%';
+  document.getElementById('v-loss0').textContent = (loss0*100).toFixed(1)+'%';
+  document.getElementById('v-uplift').textContent = (uplift*100).toFixed(0)+'%';
+  document.getElementById('v-margin').textContent = (margin*100).toFixed(0)+'%';
+  document.getElementById('v-goods').textContent = (goods*100).toFixed(0)+'%';
+  document.getElementById('v-disc').textContent = (disc*100).toFixed(1)+'%';
+  document.getElementById('v-comm1').textContent = (comm1*100).toFixed(1)+'%';
+  document.getElementById('v-target').textContent = (target*100).toFixed(0)+'%';
+  document.getElementById('v-extra').textContent = (extraFull*100).toFixed(0)+'%';
+  document.getElementById('v-expert').textContent = (expert*100).toFixed(0)+'%';
+
+  const toPromo = TO*goods;
+  const toNonpromo = TO*(1-goods);
+
+  // эффективный доп.прирост пропорционален доле акционных товаров:
+  // на 100% ассортимента даёт полный эффект extraFull, на меньшей доле — пропорционально меньше
+  const extra = extraFull*goods;
+  document.getElementById('extra-goods-pct').textContent = (goods*100).toFixed(0)+'%';
+  document.getElementById('extra-effective').textContent = (extra*100).toFixed(1)+'%';
+
+  // Прямая формула переток-эффекта, простая для объяснения:
+  // рост = (целевая доля сервиса − текущая доля сервиса) × рост чека
+  const growthSimple = (target-share0)*uplift;
+
+  const toPromoNew = toPromo*(1+growthSimple)*(1+extra)*(1+expert);
+  const toNonpromoNew = toNonpromo*(1+extra)*(1+expert);
+  const toNew = toPromoNew + toNonpromoNew;
+
+  const serviceRevNew = toPromoNew*target;
+  const lossPromo = discountMode === 'all'
+    ? toPromoNew*disc + serviceRevNew*comm1   // скидка всем: скидка бьёт по всему акционному обороту, комиссия — только по сервисной части
+    : serviceRevNew*(disc+comm1);             // скидка только за рассрочку: и скидка, и комиссия — на сервисной части
+  const lossNonpromo = toNonpromoNew*share0*loss0;
+  const lossNew = lossPromo + lossNonpromo;
+
+  const lossBase = TO*share0*loss0;
+  const lossBasePct = TO>0 ? (lossBase/TO)*100 : 0;
+  const lossNewPct = toNew>0 ? (lossNew/toNew)*100 : 0;
+
+  const toDeltaRub = toNew - TO;
+  const toDeltaPct = TO>0 ? (toDeltaRub/TO)*100 : 0;
+  const lossDeltaPp = lossNewPct - lossBasePct;
+
+  const profitBefore = TO*margin - lossBase;
+  const profitAfter = toNew*margin - lossNew;
+  const profitDelta = profitAfter - profitBefore;
+
+  document.getElementById('profit-before').textContent = fmtRub(profitBefore);
+  document.getElementById('profit-after').textContent = fmtRub(profitAfter);
+  document.getElementById('profit-after').className = 'compare-val after' + (profitAfter<0?' neg':'');
+  document.getElementById('profit-delta').textContent =
+    (profitDelta>=0?'+':'') + Math.round(profitDelta).toLocaleString('ru-RU') + ' ₽ / мес';
+  document.getElementById('profit-delta').className = 'delta ' + (profitDelta>=0?'pos':'neg');
+
+  document.getElementById('to-before').textContent = fmtRub(TO);
+  document.getElementById('to-after').textContent = fmtRub(toNew);
+  document.getElementById('to-delta').textContent =
+    (toDeltaPct>=0?'+':'') + toDeltaPct.toFixed(1) + '% (' +
+    (toDeltaRub>=0?'+':'') + Math.round(toDeltaRub).toLocaleString('ru-RU') + ' ₽)';
+  document.getElementById('to-delta').className = 'delta ' + (toDeltaRub>=0?'pos':'neg');
+  document.getElementById('to-delta').style.textAlign='left';
+
+  document.getElementById('loss-before').textContent = fmtPct(lossBasePct, 2);
+  document.getElementById('loss-after').textContent = fmtPct(lossNewPct, 2);
+  document.getElementById('loss-delta').textContent =
+    (lossDeltaPp>=0?'+':'') + lossDeltaPp.toFixed(2) + ' п.п.';
+  document.getElementById('loss-delta').className = 'delta pos';
+  document.getElementById('loss-delta').style.textAlign='left';
+}
+
+document.querySelectorAll('input[type=range]').forEach(el => {
+  paintRange(el);
+  el.addEventListener('input', () => paintRange(el));
+});
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
+calc();
+</script>
+</body>
+</html>
