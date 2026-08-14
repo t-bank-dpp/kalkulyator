@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сводка по акции — скидка + рассрочка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10131A;
+    --paper:#1A1F29;
+    --paper-2:#20263252;
+    --line:#2E3542;
+    --fg:#EDEFF4;
+    --muted:#8891A3;
+    --amber:#E8A23D;
+    --emerald:#3FCB8E;
+    --coral:#FF6E61;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, #1c2230 0%, var(--ink) 60%);
+    color:var(--fg);
+    font-family:'Inter',sans-serif;
+    display:flex;
+    justify-content:center;
+    padding:56px 20px 80px;
+  }
+  .wrap{width:100%;max-width:640px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.16em;
+    color:var(--amber);
+    text-transform:uppercase;
+    margin-bottom:14px;
+    text-align:center;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:clamp(30px,5vw,42px);
+    line-height:1.08;
+    margin:0 0 10px;
+    text-align:center;
+    letter-spacing:-.01em;
+  }
+  .subtitle{
+    text-align:center;
+    color:var(--muted);
+    font-size:14.5px;
+    margin:0 0 40px;
+  }
+
+  .receipt{
+    position:relative;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:36px 30px 26px;
+    animation:rise .5s ease-out both;
+  }
+  @media (prefers-reduced-motion: reduce){ .receipt{animation:none;} }
+  @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+  .perf{
+    position:absolute;left:0;right:0;height:10px;
+    background-image:radial-gradient(circle at 10px 5px, var(--ink) 5px, transparent 5.5px);
+    background-size:20px 10px;
+    background-repeat:repeat-x;
+  }
+  .perf.top{top:-5px;}
+  .perf.bottom{bottom:-5px;transform:rotate(180deg);}
+
+  .block-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin:0 0 16px;
+  }
+
+  /* Signature comparison row: loss before/after */
+  .loss-compare{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:end;
+    gap:14px;
+    padding:8px 4px 22px;
+    margin-bottom:22px;
+    border-bottom:1px dashed var(--line);
+  }
+  .loss-side{display:flex;flex-direction:column;gap:6px;}
+  .loss-side.after{text-align:right;align-items:flex-end;}
+  .loss-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.08em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  .loss-val{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:clamp(30px,7vw,40px);
+    line-height:1;
+  }
+  .loss-val.before{color:var(--fg);}
+  .loss-val.after{color:var(--coral);}
+  .loss-arrow{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--muted);
+    font-size:20px;
+    padding-bottom:6px;
+  }
+  .loss-delta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--coral);
+    padding-bottom:6px;
+  }
+
+  .row{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    padding:13px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .row:last-child{border-bottom:none;}
+  .row .label{
+    font-size:13.5px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .leader{
+    flex:1;
+    border-bottom:1px dotted #3A4152;
+    transform:translateY(-4px);
+  }
+  .row .value{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:500;
+    font-size:16px;
+    white-space:nowrap;
+  }
+  .value.pos{color:var(--emerald);}
+  .value.neu{color:var(--fg);}
+  .value.sub{
+    font-family:'Inter',sans-serif;
+    font-size:11.5px;
+    color:var(--muted);
+    font-weight:400;
+    margin-left:6px;
+  }
+
+  .foot{
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    margin-top:26px;
+    line-height:1.6;
+  }
+  .foot b{color:#B7BECC;font-weight:500;}
+
+  @media (max-width:480px){
+    .receipt{padding:30px 18px 22px;}
+    .loss-val{font-size:26px;}
+    .row .label{font-size:12.5px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Акция · скидка партнёра + скидка сервиса на комиссию</div>
+  <h1>Сводка по акции</h1>
+  <p class="subtitle">8 ключевых показателей — рост оборота и потери магазина от рассрочки</p>
+
+  <div class="receipt">
+    <div class="perf top"></div>
+
+    <p class="block-label">Потеря магазина от рассрочки, % от всего ТО</p>
+    <div class="loss-compare">
+      <div class="loss-side before">
+        <span class="loss-tag">До акции</span>
+        <span class="loss-val before">0.60%</span>
+      </div>
+      <div class="loss-arrow">→</div>
+      <div class="loss-side after">
+        <span class="loss-tag">При акции + рассрочка</span>
+        <span class="loss-val after">1.06%</span>
+      </div>
+    </div>
+    <p style="text-align:center;margin:-14px 0 24px;color:var(--muted);font-size:12px;font-family:'IBM Plex Mono',monospace;">
+      +0.46 п.п. — рост потери в деньгах объясняется бо́льшим объёмом через сервис, ставка при этом в рамках лимита (см. ниже)
+    </p>
+
+    <div class="row">
+      <span class="label">Товарооборот (ТО) сейчас</span>
+      <span class="leader"></span>
+      <span class="value neu">1 000 000 ₽</span>
+    </div>
+    <div class="row">
+      <span class="label">Новый ТО после акции</span>
+      <span class="leader"></span>
+      <span class="value neu">1 179 015 ₽</span>
+    </div>
+    <div class="row">
+      <span class="label">Рост ТО</span>
+      <span class="leader"></span>
+      <span class="value pos">+17.9%</span>
+    </div>
+    <div class="row">
+      <span class="label">Ставка на акции (скидка + комиссия)</span>
+      <span class="leader"></span>
+      <span class="value neu">6.0%<span class="value sub">лимит 6.0%, запас 0.0%</span></span>
+    </div>
+    <div class="row">
+      <span class="label">Целевая доля сервиса после акции</span>
+      <span class="leader"></span>
+      <span class="value neu">25%</span>
+    </div>
+    <div class="row">
+      <span class="label">Прирост дохода партнёра-сервиса</span>
+      <span class="leader"></span>
+      <span class="value pos">+473 ₽/мес</span>
+    </div>
+
+    <div class="perf bottom"></div>
+  </div>
+
+  <p class="foot">Значения рассчитаны по текущим вводным калькулятора акции (лист «Калькулятор»).<br>
+  Измените скидку, комиссию, долю акционных товаров или целевую долю сервиса — <b>пересчитайте в Excel-файле</b>, эта страница показывает срез на момент экспорта.</p>
+</div>
+</body>
+</html>
